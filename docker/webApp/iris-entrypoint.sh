@@ -36,7 +36,7 @@ if [[ "${target}" == iris-worker ]] ; then
         celery -A app.celery worker -c $NUMBER_OF_CHILD -E -B -l $LOG_LEVEL &
     fi
 else
-    gunicorn app:app --bind 0.0.0.0:8000 --timeout 180 --worker-connections 1000 --threads 100 -w 1 --log-level=info &
+    gunicorn app:app --bind 0.0.0.0:${IRIS_UPSTREAM_PORT} --timeout 180 --worker-connections 1000 --threads 100 -w 1 --log-level=info &
 fi
 
 while true; do sleep 2; done

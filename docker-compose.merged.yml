@@ -72,7 +72,7 @@ services:
     command:
       [
         "./wait-for-iriswebapp.sh",
-        "app:8000",
+        "app:${IRIS_UPSTREAM_PORT}",
         "./iris-entrypoint.sh",
         "iris-worker",
       ]
