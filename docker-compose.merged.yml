@@ -122,10 +122,10 @@ services:
       - IRIS_AUTHENTICATION_TYPE
     networks:
       - iris_frontend
-    # ports:
-    #   - "${INTERFACE_HTTPS_PORT:-443}:${INTERFACE_HTTPS_PORT:-443}"
-    expose:
-      - ${INTERFACE_HTTPS_PORT}
+    ports:
+      - "${INTERFACE_HTTPS_PORT:-443}:${INTERFACE_HTTPS_PORT:-443}"
+    # expose:
+    #   - ${INTERFACE_HTTPS_PORT}
     volumes:
       - "./certificates/web_certificates/:/www/certs/:ro"
     restart: always
