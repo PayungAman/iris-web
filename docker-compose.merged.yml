@@ -24,7 +24,8 @@ services:
       - iris_backend
 
   db:
-    image: ${DB_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_db}:${DB_IMAGE_TAG:-v2.4.20}
+    build:
+      context: docker/db
     container_name: iriswebapp_db
     restart: always
     environment:
@@ -39,7 +40,9 @@ services:
       - db_data:/var/lib/postgresql/data
 
   app:
-    image: ${APP_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_app}:${APP_IMAGE_TAG:-v2.4.20}
+    build:
+      context: .
+      dockerfile: docker/webApp/Dockerfile
     container_name: iriswebapp_app
     command: ["nohup", "./iris-entrypoint.sh", "iriswebapp"]
     volumes:
@@ -66,7 +69,9 @@ services:
       - iris_backend
 
   worker:
-    image: ${APP_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_app}:${APP_IMAGE_TAG:-v2.4.20}
+    build:
+      context: .
+      dockerfile: docker/webApp/Dockerfile
     container_name: iriswebapp_worker
     restart: always
     command:
