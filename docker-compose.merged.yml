@@ -68,7 +68,7 @@ services:
     networks:
       - iris_backend
     expose:
-      - "8000"
+      - ${IRIS_UPSTREAM_PORT}
 
   worker:
     image: ${APP_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_app}:${APP_IMAGE_TAG:-v2.4.20}
