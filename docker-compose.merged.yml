@@ -67,7 +67,8 @@ services:
       - IRIS_SECURITY_PASSWORD_SALT
     networks:
       - iris_backend
-      - iris_frontend
+    expose:
+      - "8000"
 
   worker:
     image: ${APP_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_app}:${APP_IMAGE_TAG:-v2.4.20}
@@ -107,30 +108,7 @@ services:
     networks:
       - iris_backend
 
-  nginx:
-    image: ${NGINX_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_nginx}:${NGINX_IMAGE_TAG:-v2.4.20}
-    container_name: iriswebapp_nginx
-    environment:
-      - IRIS_UPSTREAM_SERVER
-      - IRIS_UPSTREAM_PORT
-      - IRIS_FRONTEND_SERVER
-      - IRIS_FRONTEND_PORT
-      - INTERFACE_HTTPS_PORT
-      - SERVER_NAME
-      - CERT_FILENAME
-      - KEY_FILENAME
-      - IRIS_AUTHENTICATION_TYPE
-    networks:
-      - iris_frontend
-    # ports:
-    #   - "${INTERFACE_HTTPS_PORT:-443}:${INTERFACE_HTTPS_PORT:-443}"
-    expose:
-      - ${INTERFACE_HTTPS_PORT}
-    volumes:
-      - "./certificates/web_certificates/:/www/certs/:ro"
-    restart: always
-    depends_on:
-      - "app"
+  
 
 volumes:
   iris-downloads:
@@ -141,5 +119,3 @@ volumes:
 networks:
   iris_backend:
     name: iris_backend
-  iris_frontend:
-    name: iris_frontend
