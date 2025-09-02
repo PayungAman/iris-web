@@ -43,9 +43,6 @@ services:
     container_name: iriswebapp_app
     command: ["nohup", "./iris-entrypoint.sh", "iriswebapp"]
     volumes:
-      - ./certificates/rootCA/irisRootCACert.pem:/etc/irisRootCACert.pem:ro
-      - ./certificates/:/home/iris/certificates/:ro
-      - ./certificates/ldap/:/iriswebapp/certificates/ldap/:ro
       - iris-downloads:/home/iris/downloads
       - user_templates:/home/iris/user_templates
       - server_data:/home/iris/server_data
@@ -53,8 +50,6 @@ services:
     depends_on:
       - "rabbitmq"
       - "db"
-    env_file:
-      - .env
     environment:
       - LOG_LEVEL
       - POSTGRES_USER
@@ -65,9 +60,10 @@ services:
       - POSTGRES_PORT
       - IRIS_SECRET_KEY
       - IRIS_SECURITY_PASSWORD_SALT
+    expose:
+      - "8000"
     networks:
       - iris_backend
-      - iris_frontend
 
   worker:
     image: ${APP_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_app}:${APP_IMAGE_TAG:-v2.4.20}
@@ -81,9 +77,6 @@ services:
         "iris-worker",
       ]
     volumes:
-      - ./certificates/rootCA/irisRootCACert.pem:/etc/irisRootCACert.pem:ro
-      - ./certificates/:/home/iris/certificates/:ro
-      - ./certificates/ldap/:/iriswebapp/certificates/ldap/:ro
       - iris-downloads:/home/iris/downloads
       - user_templates:/home/iris/user_templates
       - server_data:/home/iris/server_data
@@ -91,8 +84,6 @@ services:
       - "rabbitmq"
       - "db"
       - "app"
-    env_file:
-      - .env
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -107,31 +98,6 @@ services:
     networks:
       - iris_backend
 
-  nginx:
-    image: ${NGINX_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_nginx}:${NGINX_IMAGE_TAG:-v2.4.20}
-    container_name: iriswebapp_nginx
-    environment:
-      - IRIS_UPSTREAM_SERVER
-      - IRIS_UPSTREAM_PORT
-      - IRIS_FRONTEND_SERVER
-      - IRIS_FRONTEND_PORT
-      - INTERFACE_HTTPS_PORT
-      - SERVER_NAME
-      - CERT_FILENAME
-      - KEY_FILENAME
-      - IRIS_AUTHENTICATION_TYPE
-    networks:
-      - iris_frontend
-    # ports:
-    #   - "${INTERFACE_HTTPS_PORT:-443}:${INTERFACE_HTTPS_PORT:-443}"
-    expose:
-      - ${INTERFACE_HTTPS_PORT}
-    volumes:
-      - "./certificates/web_certificates/:/www/certs/:ro"
-    restart: always
-    depends_on:
-      - "app"
-
 volumes:
   iris-downloads:
   user_templates:
@@ -141,5 +107,3 @@ volumes:
 networks:
   iris_backend:
     name: iris_backend
-  iris_frontend:
-    name: iris_frontend
