@@ -31,12 +31,12 @@ printf "Running ${target} ...\n"
 
 if [[ "${target}" == iris-worker ]] ; then
     if [[ -z $NUMBER_OF_CHILD ]]; then
-        exec celery -A app.celery worker -E -B -l $LOG_LEVEL &
+        celery -A app.celery worker -E -B -l $LOG_LEVEL &
     else
-        exec celery -A app.celery worker -c $NUMBER_OF_CHILD -E -B -l $LOG_LEVEL &
+        celery -A app.celery worker -c $NUMBER_OF_CHILD -E -B -l $LOG_LEVEL &
     fi
 else
-    exec gunicorn app:app --bind 0.0.0.0:8000 --timeout 180 --worker-connections 1000 --threads 100 -w 1 --log-level=$LOG_LEVEL &
+    gunicorn app:app --bind 0.0.0.0:8000 --timeout 180 --worker-connections 1000 --threads 100 -w 1 --log-level=$LOG_LEVEL &
 fi
 
 
