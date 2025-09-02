@@ -43,9 +43,6 @@ services:
     container_name: iriswebapp_app
     command: ["nohup", "./iris-entrypoint.sh", "iriswebapp"]
     volumes:
-      - ./certificates/rootCA/irisRootCACert.pem:/etc/irisRootCACert.pem:ro
-      - ./certificates/:/home/iris/certificates/:ro
-      - ./certificates/ldap/:/iriswebapp/certificates/ldap/:ro
       - iris-downloads:/home/iris/downloads
       - user_templates:/home/iris/user_templates
       - server_data:/home/iris/server_data
@@ -53,8 +50,6 @@ services:
     depends_on:
       - "rabbitmq"
       - "db"
-    env_file:
-      - .env
     environment:
       - LOG_LEVEL
       - POSTGRES_USER
@@ -65,13 +60,10 @@ services:
       - POSTGRES_PORT
       - IRIS_SECRET_KEY
       - IRIS_SECURITY_PASSWORD_SALT
-      - PORT
+    expose:
+      - "8000"
     networks:
       - iris_backend
-    ports:
-      - ${IRIS_UPSTREAM_PORT}:${IRIS_UPSTREAM_PORT}
-    expose:
-      - ${IRIS_UPSTREAM_PORT}
 
   worker:
     image: ${APP_IMAGE_NAME:-ghcr.io/dfir-iris/iriswebapp_app}:${APP_IMAGE_TAG:-v2.4.20}
@@ -85,9 +77,6 @@ services:
         "iris-worker",
       ]
     volumes:
-      - ./certificates/rootCA/irisRootCACert.pem:/etc/irisRootCACert.pem:ro
-      - ./certificates/:/home/iris/certificates/:ro
-      - ./certificates/ldap/:/iriswebapp/certificates/ldap/:ro
       - iris-downloads:/home/iris/downloads
       - user_templates:/home/iris/user_templates
       - server_data:/home/iris/server_data
@@ -95,8 +84,6 @@ services:
       - "rabbitmq"
       - "db"
       - "app"
-    env_file:
-      - .env
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -110,8 +97,6 @@ services:
       - LOG_LEVEL
     networks:
       - iris_backend
-
-  
 
 volumes:
   iris-downloads:
